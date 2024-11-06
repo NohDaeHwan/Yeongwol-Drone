@@ -1,0 +1,50 @@
+spring:
+  devtools:
+    restart:
+      enabled: false
+  datasource:
+    username: postgres
+    password: jbt10223
+    url: jdbc:postgresql://192.168.200.15:5432/yw_drone
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    defer-datasource-initialization: false
+    database: postgresql
+    properties:
+      hibernate:
+        use_sql_comments: false
+        format_sql: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    database-platform: org.hibernate.spatial.dialect.postgis.PostgisDialect
+  sql:
+    init:
+      mode: never
+  web:
+    resources:
+      static-locations:
+        - file:/home/drone/static/
+        - classpath:/META-INF/resources/
+        - classpath:/resources/
+        - classpath:/static/
+        - classpath:/public/
+
+logging:
+  file:
+    path: ./logs
+    name: ./logs/drone-viewer.log
+  level:
+    org.hibernate.SQL: warn
+    org.hibernate.orm.jdbc.bind: warn
+    com.ejbt.drone.yeongwol: debug
+
+app:
+  ws-origins:
+    - http://192.168.200.15:8098
+    - http://remote.ejbt.co.kr:8098/
+  receiver:
+    tcp-port: 18098
+  dem-path: 'file:/home/drone/static/cop30.tif'

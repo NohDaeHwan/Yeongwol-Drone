@@ -1,0 +1,93 @@
+plugins {
+	id 'eclipse'
+    id 'com.diffplug.eclipse.apt' version '3.37.2'
+	id 'org.springframework.boot' version '3.3.5'
+	id 'io.spring.dependency-management' version '1.1.6'
+}
+
+version = '0.0.1-SNAPSHOT'
+
+ext {
+    PROFILE_DEV = { -> 'dev' }
+    PROFILE_PROD = { -> 'prod' }
+}
+
+if (!project.hasProperty('profile') || !profile) {
+    ext.profile = PROFILE_DEV()
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+configurations.configureEach {
+    exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-undertow'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.hibernate.common:hibernate-commons-annotations:6.0.6.Final'
+    implementation 'org.hibernate.orm:hibernate-spatial'
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'org.postgresql:postgresql'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+
+    implementation 'org.apache.poi:poi-ooxml:5.2.4'
+
+    /**
+     * MapStruct
+     */
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    implementation "org.mapstruct.extensions.spring:mapstruct-spring-annotations:${mapstructSpringExtensionsVersion}"
+    annotationProcessor "org.mapstruct.extensions.spring:mapstruct-spring-extensions:${mapstructSpringExtensionsVersion}"
+
+    /**
+     * GeoTools
+     */
+    implementation "org.geotools:gt-jdbc:${geotoolsVersion}"
+    implementation "org.geotools:gt-cql:${geotoolsVersion}"
+    implementation "org.geotools:gt-geotiff:${geotoolsVersion}"
+    implementation "org.geotools.jdbc:gt-jdbc-postgis:${geotoolsVersion}"
+
+    compileOnly fileTree(dir: '../lib', includes: ['*.jar'])
+}
+
+if(profile == PROFILE_PROD()) {
+    sourceSets.main.resources {
+//        exclude 'static/lib/JBCesium/jb-cesium.js'
+        exclude '**/application-local.yml'
+        exclude '**/application-dev.yml'
+    }
+}
+
+//processResources {
+//    with copySpec {
+//        from 'src/main/resources/static/lib/JBCesium/jb-cesium.min.js'
+//        filter { String line -> line.replace("jb-cesium.min.js", "jb-cesium.js")}
+//    }
+//}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+bootJar {
+    launchScript()
+    enabled = true
+    archiveFileName = 'drone-viewer.jar'
+}

@@ -1,0 +1,30 @@
+spring:
+  profiles:
+    active: local
+  main:
+    banner-mode: off
+    allow-bean-definition-overriding: true
+  pid:
+    file: drone-viewer.pid
+  session:
+    timeout: 1h
+  mvc:
+    view:
+      suffix: .html
+      prefix: /templates/
+  thymeleaf:
+    cache: false
+
+server:
+  port: 8098
+  shutdown: graceful
+  servlet:
+    session:
+      timeout: 1h
+
+app:
+  thymeleaf-decoupled-logic: true
+  ws-origins:
+    - http://localhost:8098
+  receiver:
+    tcp-port: 18098

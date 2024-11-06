@@ -1,1 +1,3 @@
 rootProject.name = 'ywdrone'
+
+include 'viewer3d'
